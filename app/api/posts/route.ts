@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     };
 
     await connectDB();
-    const post = await Post.create(postData);
+    await Post.create(postData);
   } catch (error) {
     return NextResponse.json({ error: "Error creating post" }, { status: 500 });
   }
