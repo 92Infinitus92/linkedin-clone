@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { MinusIcon } from "lucide-react";
 import deletePostAction from "@/actions/deletePostAction";
 import Image from "next/image";
+import PostOptions from "./PostOptions";
 
 function Post({ post }: { post: IPostDocument }) {
   const { user } = useUser();
@@ -64,7 +65,7 @@ function Post({ post }: { post: IPostDocument }) {
       </div>
 
       <div>
-        <p>{post.text}</p>
+        <p className="px-4 pb-2 mt-2">{post.text}</p>
 
         {post.imageUrl && (
           <div className="relative w-full h-64 mt-2 rounded-lg overflow-hidden">
@@ -78,6 +79,7 @@ function Post({ post }: { post: IPostDocument }) {
           </div>
         )}
       </div>
+      <PostOptions post={post} />
     </div>
   );
 }

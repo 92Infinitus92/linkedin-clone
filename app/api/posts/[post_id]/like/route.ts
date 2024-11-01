@@ -5,18 +5,19 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { post_id: string } }
+  context: { params: { post_id: string } } // Change here
 ) {
   await connectDB();
+  const { post_id } = await context.params; // Destructure with `await`
 
   try {
-    const post = await Post.findById(params.post_id);
+    const post = await Post.findById(post_id);
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
-    const likes = await post.likes;
+    const likes = post.likes;
 
     return NextResponse.json({ likes }, { status: 200 });
   } catch (error) {
@@ -26,10 +27,11 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { post_id: string } }
+  context: { params: { post_id: string } } // Change here
 ) {
   auth.protect();
   await connectDB();
+  const { post_id } = await context.params; // Destructure with `await`
   const user = await currentUser();
 
   if (!user) {
@@ -37,13 +39,18 @@ export async function POST(
   }
 
   try {
-    const post = await Post.findById(params.post_id);
+    const post = await Post.findById(post_id);
 
     if (!post) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
 
     await post.likePost(user.id);
+
+    return NextResponse.json(
+      { message: "Post liked successfully" },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ error: "Error liking post" }, { status: 500 });
   }

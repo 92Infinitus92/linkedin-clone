@@ -14,6 +14,10 @@
   .icon p {
     @apply text-gray-400 text-xs;
   }
+
+  .postButton {
+    @apply flex justify-center flex-1
+  }
 }
 
 @layer base {
