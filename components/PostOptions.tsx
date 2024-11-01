@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { MessageCircle, Repeat2, Send, ThumbsUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CommentFeed from "./CommentFeed";
 
 function PostOptions({ post }: { post: IPostDocument }) {
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -120,16 +121,7 @@ function PostOptions({ post }: { post: IPostDocument }) {
       {isCommentOpen && (
         <div className="flex flex-col space-y-2 p-4">
           {post.comments?.map((comment) => (
-            <div key={comment._id.toString()} className="flex space-x-2">
-              <div className="flex-1">
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold">
-                    {comment.user.firstName}
-                  </span>{" "}
-                  {comment.text}
-                </p>
-              </div>
-            </div>
+            <CommentFeed key={comment._id.toString()} post={post} />
           ))}
         </div>
       )}
