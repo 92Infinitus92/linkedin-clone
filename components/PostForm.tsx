@@ -28,14 +28,24 @@ function PostForm() {
     ref.current?.reset();
 
     const text = formDataCopy.get("postInput") as string;
-    const image = formDataCopy.get("image");
+    const image = formDataCopy.get("image") as File;
 
     if (!text.trim()) {
       throw new Error("Post cannot be empty");
     }
     setPreview(null);
+
+    let imageBinary: ArrayBuffer | null = null;
+
+    if (image) {
+      imageBinary = await image.arrayBuffer();
+    }
+
     try {
-      await createPostAction(formData);
+      await createPostAction({
+        text,
+        image: imageBinary ? new Uint8Array(imageBinary) : null,
+      });
     } catch (error) {
       console.log(error);
       throw new Error("Post failed");
