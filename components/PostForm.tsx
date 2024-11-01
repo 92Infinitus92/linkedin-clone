@@ -31,6 +31,7 @@ function PostForm() {
     const image = formDataCopy.get("image") as File;
 
     if (!text.trim()) {
+      console.error("Post content is empty");
       throw new Error("Post cannot be empty");
     }
     setPreview(null);
@@ -42,12 +43,14 @@ function PostForm() {
     }
 
     try {
+      console.log("Submitting post action with:", { text, imageBinary });
       await createPostAction({
         text,
         image: imageBinary ? new Uint8Array(imageBinary) : null,
       });
+      console.log("Post action completed successfully");
     } catch (error) {
-      console.log(error);
+      console.error("Error in handlePostAction:", error);
       throw new Error("Post failed");
     }
   };
