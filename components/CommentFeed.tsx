@@ -24,14 +24,14 @@ function CommentFeed({ post }: { post: IPostDocument }) {
           <div className="bg-gray-100 px-4 py-2 rounded-md w-full sm:w-auto md:min-w-[300px]">
             <div className="flex justify-between">
               <div>
-                <p className="font-semibold">
+                <div className="font-semibold">
                   {comment.user.firstName} {comment.user.lastName}
                   {isAuthor && (
                     <Badge className="ml-2" variant={"secondary"}>
                       Author
                     </Badge>
                   )}
-                </p>
+                </div>
                 <p>
                   @{comment.user.firstName}
                   {comment.user.firstName}-{comment.user.userId.slice(-4)}

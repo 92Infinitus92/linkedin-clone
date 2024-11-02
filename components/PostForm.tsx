@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { ImageIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import createPostAction from "@/actions/createPostAction";
+import { toast } from "sonner";
 
 function PostForm() {
   const ref = useRef<HTMLFormElement>(null);
@@ -59,7 +60,12 @@ function PostForm() {
     <div className="mb-2">
       <form
         action={(formData) => {
-          handlePostAction(formData);
+          const promise = handlePostAction(formData);
+          toast.promise(promise, {
+            loading: "Posting...",
+            success: "Posted!",
+            error: "Post failed",
+          });
         }}
         ref={ref}
         className="p-3 bg-white rounded-lg border"
@@ -106,8 +112,12 @@ function PostForm() {
             </div>
           )}
 
-          <div className="flex justify-end mt-2 space-x-2">
-            <Button type="button" onClick={() => fileRef.current?.click()}>
+          <div className="flex justify-end mt-2 space-x-2 place-self-end">
+            <Button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              variant={"outline"}
+            >
               <ImageIcon className="mr-2" size={16} color="currentColor" />
               {preview ? "Change Image" : "Upload Image"}
             </Button>

@@ -7,6 +7,7 @@ import { MessageCircle, Repeat2, Send, ThumbsUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CommentFeed from "./CommentFeed";
 import CommentForm from "./CommentForm";
+import { toast } from "sonner";
 
 function PostOptions({ post }: { post: IPostDocument }) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
@@ -89,7 +90,14 @@ function PostOptions({ post }: { post: IPostDocument }) {
         <Button
           variant={"ghost"}
           className="postButton"
-          onClick={likeOrUnlikePost}
+          onClick={() => {
+            const promise = likeOrUnlikePost();
+            toast.promise(promise, {
+              loading: "Loading",
+              success: "Success",
+              error: "Error",
+            });
+          }}
         >
           <ThumbsUpIcon
             className={cn("mr-1", liked && "text-blue-500 fill-blue-500")}
