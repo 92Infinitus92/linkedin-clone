@@ -31,7 +31,7 @@ export default async function createPostAction({
     const postData = {
       user: userDB,
       text,
-      imageUrl: image ? Buffer.from(image) : undefined, // Store as Buffer
+      imageUrl: image ? Buffer.from(image) : undefined,
     };
 
     await Post.create(postData);

@@ -1,6 +1,6 @@
 import { IUser } from "@/types/user";
 import { Comment, IComment, ICommentBase } from "./comment";
-import { model, Model, models, Schema, Types } from "mongoose";
+import { model, Model, models, Schema, Types, Document } from "mongoose";
 
 export interface IPostBase {
   user: IUser;
@@ -28,11 +28,11 @@ interface IPostStatics {
   getAllPosts: () => Promise<IPostDocument[]>;
 }
 
-export interface IPostDocument extends IPost, IPostMethods {} //singular instance of a post
+export interface IPostDocument extends IPost, IPostMethods {}
 
-interface IPostModel extends IPostStatics, Model<IPostDocument> {} // all posts
+interface IPostModel extends Model<IPostDocument>, IPostStatics {}
 
-const PostSchema = new Schema<IPostDocument>(
+const PostSchema = new Schema<IPostDocument, IPostModel>(
   {
     user: {
       userId: {
@@ -56,20 +56,15 @@ const PostSchema = new Schema<IPostDocument>(
       required: true,
     },
     imageUrl: {
-      type: Buffer, // Store binary data
+      type: String,
     },
     comments: [
       {
-        type: [Schema.Types.ObjectId],
+        type: Schema.Types.ObjectId,
         ref: "Comment",
-        default: [],
       },
     ],
-    likes: [
-      {
-        type: [String],
-      },
-    ],
+    likes: [String],
   },
   {
     timestamps: true,
@@ -84,6 +79,7 @@ PostSchema.methods.likePost = async function (userId: string) {
       },
     });
   } catch (error) {
+    console.error("Error liking post:", error);
     throw new Error("Error liking post");
   }
 };
@@ -96,6 +92,7 @@ PostSchema.methods.unlikePost = async function (userId: string) {
       },
     });
   } catch (error) {
+    console.error("Error unliking post:", error);
     throw new Error("Error unliking post");
   }
 };
@@ -106,6 +103,7 @@ PostSchema.methods.commentOnPost = async function (commentToAdd: ICommentBase) {
     this.comments.push(comment._id);
     await this.save();
   } catch (error) {
+    console.error("Error commenting on post:", error);
     throw new Error("Error commenting on post");
   }
 };
@@ -122,6 +120,7 @@ PostSchema.methods.getAllComments = async function () {
     });
     return this.comments;
   } catch (error) {
+    console.error("Error getting all comments:", error);
     throw new Error("Error getting all comments");
   }
 };
@@ -130,6 +129,7 @@ PostSchema.methods.removePost = async function () {
   try {
     await this.model("Post").deleteOne({ _id: this._id });
   } catch (error) {
+    console.error("Error removing post:", error);
     throw new Error("Error removing post");
   }
 };
@@ -146,19 +146,21 @@ PostSchema.statics.getAllPosts = async function () {
           },
         },
       })
-      .lean(); //convert mongoose object to plain js object
+      .lean();
 
-    return posts.map((post: IPostDocument) => ({
+    return posts.map((post: any) => ({
       ...post,
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
       _id: post._id.toString(),
-      comments: post.comments?.map((comment: IComment) => ({
+      imageUrl: post.userImage,
+      comments: post.comments?.map((comment: any) => ({
         ...comment,
         _id: comment._id.toString(),
       })),
     }));
   } catch (error) {
+    console.error("Error getting all posts:", error);
     throw new Error("Error getting all posts");
   }
 };
@@ -166,3 +168,5 @@ PostSchema.statics.getAllPosts = async function () {
 export const Post =
   (models.Post as IPostModel) ||
   model<IPostDocument, IPostModel>("Post", PostSchema);
+
+console.log("Post model initialized");

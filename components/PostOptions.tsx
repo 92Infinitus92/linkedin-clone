@@ -1,14 +1,15 @@
 "use client";
 import { IPostDocument } from "@/mongodb/models/post";
-import { useUser } from "@clerk/nextjs";
+import { SignedIn, useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { MessageCircle, Repeat2, Send, ThumbsUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CommentFeed from "./CommentFeed";
+import CommentForm from "./CommentForm";
 
 function PostOptions({ post }: { post: IPostDocument }) {
-  const [isCommentOpen, setIsCommentOpen] = useState(false);
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const { user } = useUser();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(
@@ -76,7 +77,7 @@ function PostOptions({ post }: { post: IPostDocument }) {
         <div>
           {post.comments && post.comments.length > 0 && (
             <p
-              onClick={() => setIsCommentOpen(!isCommentOpen)}
+              onClick={() => setIsCommentsOpen(!isCommentsOpen)}
               className="text-xs text-gray-500 cursor-pointer hover:underline"
             >
               {post.comments.length} comments
@@ -98,12 +99,12 @@ function PostOptions({ post }: { post: IPostDocument }) {
         <Button
           variant={"ghost"}
           className="postButton"
-          onClick={() => setIsCommentOpen(!isCommentOpen)}
+          onClick={() => setIsCommentsOpen(!isCommentsOpen)}
         >
           <MessageCircle
             className={cn(
               "mr-1",
-              isCommentOpen && "text-gray-500 fill-gray-500"
+              isCommentsOpen && "text-gray-500 fill-gray-500"
             )}
           />
           Comment
@@ -118,11 +119,12 @@ function PostOptions({ post }: { post: IPostDocument }) {
           Send
         </Button>
       </div>
-      {isCommentOpen && (
+      {isCommentsOpen && (
         <div className="flex flex-col space-y-2 p-4">
-          {post.comments?.map((comment) => (
-            <CommentFeed key={comment._id.toString()} post={post} />
-          ))}
+          <SignedIn>
+            <CommentForm postId={post._id.toString()} />
+          </SignedIn>
+          <CommentFeed post={post} />
         </div>
       )}
     </div>
